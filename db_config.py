@@ -16,20 +16,20 @@ def create_connection(db_file):
 	return conn
 
 
-# def save_payment(conn, data):
-# 	"""
-# 	Create a new order
-# 	:param conn:
-# 	:param data:
-# 	:return:
-# 	"""
-#
-# 	sql = "INSERT INTO orders(payment_id, chat_id, user_id, title, price) VALUES(?,?,?,?,?)"
-# 	cur = conn.cursor()
-# 	cur.execute(sql, data)
-# 	conn.commit()
-#
-# 	return cur.lastrowid
+def save_payment(conn, data):
+	"""
+	Create a new payment
+	:param conn:
+	:param data:
+	:return:
+	"""
+
+	sql = "INSERT INTO chat (chat_id, user_id, title, price) VALUES(?,?,?,?)"
+	cur = conn.cursor()
+	cur.execute(sql, data)
+	conn.commit()
+
+	return cur.lastrowid
 
 
 # def get_user_state(conn, user_id, chat_id):
