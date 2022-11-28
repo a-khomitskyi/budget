@@ -1,3 +1,4 @@
+import logging
 import sqlite3
 
 
@@ -32,12 +33,18 @@ def save_payment(conn, data):
 	return cur.lastrowid
 
 
-# def get_user_state(conn, user_id, chat_id):
-# 	try:
-# 		sql = f"SELECT state FROM states WHERE user_id={user_id} and chat_id={chat_id}"
-# 		cur = conn.cursor()
-# 		cur.execute(sql)
-# 		result = cur.fetchall()
-# 		conn.close()
-#
-# 	return result
+def get_stat_for_curr_month(conn, chat_id):
+	try:
+		sql = f"SELECT (user_id, price) FROM chat WHERE chat_id={chat_id} and EXTRACT(MONTH FROM created_at)=EXTRACT(MONTH FROM CURRENT_DATE) and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY user_id"
+		cur = conn.cursor()
+		cur.execute(sql)
+		result = cur.fetchall()
+		conn.close()
+	except Exception as _e:
+		print(_e)
+	return result
+
+
+if __name__ == '__main__':
+	save_payment(create_connection('db.sqlite'), [123213131, 12312312312, "test", "test"])
+
