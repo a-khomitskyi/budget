@@ -33,7 +33,7 @@ async def result(message: types.Message):
 def register_handlers_add(dp: Dispatcher):
 	dp.register_message_handler(stat, commands="stat", state="*")
 	dp.register_message_handler(stat, CommandStart(deep_link="stat"), state="*")
-	dp.register_message_handler(stat, Text(equals="Підсумок", ignore_case=True), state="*")
+	dp.register_message_handler(result, Text(equals="Підсумок", ignore_case=True), state="*")
 	dp.register_message_handler(stat, Text(equals="Аналіз витрат", ignore_case=True), state="*")
 	# dp.register_message_handler(title_added, state=AddStates.add_title)
 

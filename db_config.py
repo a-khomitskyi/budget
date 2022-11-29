@@ -1,5 +1,25 @@
-import logging
 import sqlite3
+import psycopg2
+from dotenv import load_dotenv
+from os import getenv
+
+load_dotenv()
+
+
+def create_conn_psc2():
+	conn = None
+	try:
+		conn = psycopg2.connect(
+			database=getenv("DB_NAME"),
+			user=getenv("DB_USER"),
+			password=getenv("DB_PASS"),
+			host=getenv("DB_HOST"),
+			port=getenv("DB_PORT")
+		)
+	except psycopg2.Error as _e:
+		print(_e)
+
+	return conn
 
 
 def create_connection(db_file):
@@ -25,7 +45,7 @@ def save_payment(conn, data):
 	:return:
 	"""
 
-	sql = "INSERT INTO chat (chat_id, user_id, title, price) VALUES(?,?,?,?)"
+	sql = "INSERT INTO chat (chat_id, user_id, title, price) VALUES(%s, %s, %s, %s)"
 	cur = conn.cursor()
 	cur.execute(sql, data)
 	conn.commit()
@@ -35,7 +55,7 @@ def save_payment(conn, data):
 
 def get_stat_for_curr_month(conn, chat_id):
 	try:
-		sql = f"SELECT (user_id, price) FROM chat WHERE chat_id={chat_id} and EXTRACT(MONTH FROM created_at)=EXTRACT(MONTH FROM CURRENT_DATE) and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY user_id"
+		sql = f"SELECT (user_id, SUM(price)) FROM chat WHERE chat_id={chat_id} and EXTRACT(MONTH FROM created_at)=EXTRACT(MONTH FROM CURRENT_DATE) and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY user_id"
 		cur = conn.cursor()
 		cur.execute(sql)
 		result = cur.fetchall()
@@ -46,5 +66,6 @@ def get_stat_for_curr_month(conn, chat_id):
 
 
 if __name__ == '__main__':
-	save_payment(create_connection('db.sqlite'), [123213131, 12312312312, "test", "test"])
-
+	# save_payment(create_connection('db.sqlite'), [123213131, 12312312312, "test", "test"])
+	# save_payment(create_conn_psc2(), [123213131, 12312312312, "test", 123.12])
+	print(get_stat_for_curr_month(create_conn_psc2(), 305819779))
