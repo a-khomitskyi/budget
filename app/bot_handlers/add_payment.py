@@ -34,8 +34,8 @@ async def price_added(message: types.Message, state: FSMContext):
 	user_data = await state.get_data()
 
 	# Save to DB new order
-	db_config.save_payment(db_config.create_connection(getenv("DB_PATH")),
-				 [message.from_user.id, message.chat.id, user_data['title'], message.text.strip()])
+	db_config.save_payment(db_config.create_conn_psc2(),
+						   [message.from_user.id, message.chat.id, user_data['title'], message.text.strip()])
 
 	await message.answer("Готово!")
 	await state.finish()

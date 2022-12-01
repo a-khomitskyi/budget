@@ -54,16 +54,16 @@ async def archive(message: types.Message, state: FSMContext):
 
 		await message.answer(msg, parse_mode='html')
 		answ = ""
-		for i in row_data:
-			tmp = i.split(',')
-			answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
-		await message.answer(answ, parse_mode='html')
-		await message.answer('-----------------------------')
-		answ = ""
-		for i in sm:
-			tmp = i.split(',')
-			answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
-		await message.answer(answ, parse_mode='html')
+		# for i in row_data:
+		# 	tmp = i[0].split(',')
+		# 	answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
+		# await message.answer(answ, parse_mode='html')
+		# await message.answer('-----------------------------')
+		# answ = ""
+		# for i in sm:
+		# 	tmp = i.split(',')
+		# 	answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
+		# await message.answer(answ, parse_mode='html')
 
 
 async def all_period(message: types.Message, state: FSMContext):
