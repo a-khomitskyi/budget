@@ -27,7 +27,7 @@ async def result(message: types.Message, state: FSMContext):
 		answ = ""
 		for i in res:
 			tmp = i.split(',')
-			answ += f"{tmp[0]} — {tmp[1]} грн<br>"
+			answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
 		await message.answer(answ, parse_mode='html')
 
 
