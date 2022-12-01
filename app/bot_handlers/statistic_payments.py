@@ -20,7 +20,6 @@ async def result(message: types.Message, state: FSMContext):
 	chat_id = message.chat.id
 
 	res = db_config.get_stat_for_curr_month(db_config.create_conn_psc2(), chat_id)
-	print(res)
 	if not res:
 		await message.answer("Ще не має статистики..")
 	else:
@@ -37,14 +36,17 @@ async def detail(message: types.Message, state: FSMContext):
 
 	res = db_config.get_detail_stat_for_curr_month(db_config.create_conn_psc2(), chat_id)
 
-	msg = ""
+	if not res:
+		await message.answer("За вказаний місяць не існує статистики..")
+	else:
+		msg = ""
 
-	for i in res:
-		tmp = i.replace('(', '').replace(')', '').split(',')
-		tmp[1] = datetime.fromisoformat(tmp[1].replace('"', '')).strftime('%d-%m-%Y')
-		msg += f"✅️ <i>{tmp[1]}</i> <code>[{tmp[0]}]</code> — <b>{tmp[3]} грн</b> 👉 {tmp[2]}\n"
+		for i in res:
+			tmp = i.replace('(', '').replace(')', '').split(',')
+			tmp[1] = datetime.fromisoformat(tmp[1].replace('"', '')).strftime('%d-%m-%Y')
+			msg += f"✅️ <i>{tmp[1]}</i> <code>[{tmp[0]}]</code> — <b>{tmp[3]} грн</b> 👉 {tmp[2]}\n"
 
-	await message.answer(msg, parse_mode='html')
+		await message.answer(msg, parse_mode='html')
 
 
 def register_handlers_stat(dp: Dispatcher):
@@ -52,5 +54,3 @@ def register_handlers_stat(dp: Dispatcher):
 	dp.register_message_handler(stat, CommandStart(deep_link="stat"), state="*")
 	dp.register_message_handler(result, Text(equals="Підсумок", ignore_case=True), state="*")
 	dp.register_message_handler(detail, Text(equals="Детально", ignore_case=True), state="*")
-
-

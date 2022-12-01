@@ -22,21 +22,6 @@ def create_conn_psc2():
 	return conn
 
 
-def create_connection(db_file):
-	""" create a database connection to the SQLite database
-		specified by db_file
-	:param db_file: database file
-	:return: Connection object or None
-	"""
-	conn = None
-	try:
-		conn = sqlite3.connect(db_file)
-	except sqlite3.Error as e:
-		print(e)
-
-	return conn
-
-
 def save_payment(conn, data):
 	"""
 	Create a new payment
@@ -82,7 +67,7 @@ def get_detail_stat_for_curr_month(conn, chat_id):
 	return result
 
 
-def get_stat_for_month(conn, chat_id, date):
+def get_stat_for_any_month(conn, chat_id, date):
 	result = None
 
 	try:
@@ -96,7 +81,7 @@ def get_stat_for_month(conn, chat_id, date):
 	return result
 
 
-def get_detail_stat_for_month(conn, chat_id, date):
+def get_detail_stat_for_any_month(conn, chat_id, date):
 	result = None
 
 	try:
