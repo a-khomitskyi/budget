@@ -7,6 +7,21 @@ from datetime import datetime
 import db_config
 import re
 
+month = {
+	'1': 'Січень',
+	'2': 'Лютий',
+	'3': 'Березень',
+	'4': 'Квітень',
+	'5': 'Травень',
+	'6': 'Червень',
+	'7': 'Липень',
+	'8': 'Серпень',
+	'9': 'Вересень',
+	'10': 'Жовтень',
+	'11': 'Листопад',
+	'12': 'Грудень'
+}
+
 
 class ReviseStates(StatesGroup):
 	add_date = State()
@@ -15,7 +30,8 @@ class ReviseStates(StatesGroup):
 
 async def revise(message: types.Message):
 	await message.answer(
-		"Вкажіть місяць за який потрібно вивести інформацію:\n<i>Формат </i><code>місяць.рік</code> <i>(05.2022)</i>", parse_mode='html')
+		"Вкажіть місяць за який потрібно вивести інформацію:\n<i>Формат </i><code>місяць.рік</code> <i>(05.2022)</i>",
+		parse_mode='html')
 	await ReviseStates.add_date.set()
 
 
@@ -44,7 +60,9 @@ async def archive(message: types.Message, state: FSMContext):
 	if not row_data:
 		await message.answer("За вказаний місяць не існує статистики..")
 	else:
-		await message.answer("Статистика за month year")
+		print(user_date['date'])
+		await message.answer(f"Статистика за <u><b>{month[user_date['date'][0]]} {user_date['date'][-1]}</b></u>",
+							 parse_mode='html')
 		msg = ""
 
 		for i in row_data:
@@ -52,34 +70,32 @@ async def archive(message: types.Message, state: FSMContext):
 			tmp[1] = datetime.fromisoformat(tmp[1].replace('"', '')).strftime('%d-%m-%Y')
 			msg += f"✅️ <i>{tmp[1]}</i> <code>[{tmp[0]}]</code> — <b>{tmp[3]} грн</b> 👉 {tmp[2]}\n"
 
-		await message.answer(msg, parse_mode='html')
 		answ = ""
-		# for i in row_data:
-		# 	tmp = i[0].split(',')
-		# 	answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
-		# await message.answer(answ, parse_mode='html')
-		# await message.answer('-----------------------------')
-		# answ = ""
-		# for i in sm:
-		# 	tmp = i.split(',')
-		# 	answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
-		# await message.answer(answ, parse_mode='html')
+		for i in sm:
+			tmp = i.split(',')
+			answ += f"<code>[{tmp[0]}]</code> — <b>{tmp[1]}</b> грн\n"
+		await message.answer(msg, parse_mode='html')
+		await message.answer(f"Загальна кількість витрачених коштів:\n{answ}", parse_mode='html')
 
 
 async def all_period(message: types.Message, state: FSMContext):
 	await state.finish()
 	chat_id = message.chat.id
+	month_list = db_config.get_month(db_config.create_conn_psc2(), chat_id)
+	result = ''
 
-	res = db_config.get_detail_stat_for_curr_month(db_config.create_conn_psc2(), chat_id)
+	for i in month_list:
+		tmp = db_config.revise_all_year(db_config.create_conn_psc2(), chat_id, i)
+		result += f"<u><b>{month[i]}</b></u>\n"
 
-	msg = ""
+		for j in tmp:
+			tmp = i.replace('(', '').replace(')', '').split(',')
+			tmp[1] = datetime.fromisoformat(tmp[1].replace('"', '')).strftime('%d-%m-%Y')
+			result += f"✅️ <i>{tmp[1]}</i> <code>[{tmp[0]}]</code> — <b>{tmp[3]} грн</b> 👉 {tmp[2]}\n"
 
-	for i in res:
-		tmp = i.replace('(', '').replace(')', '').split(',')
-		tmp[1] = datetime.fromisoformat(tmp[1].replace('"', '')).strftime('%d-%m-%Y')
-		msg += f"✅️ <i>{tmp[1]}</i> <code>[{tmp[0]}]</code> — <b>{tmp[3]} грн</b> 👉 {tmp[2]}\n"
+		result += "\n"
 
-	await message.answer(msg, parse_mode='html')
+	await message.answer(result, parse_mode='html')
 
 
 def register_handlers_revise(dp: Dispatcher):

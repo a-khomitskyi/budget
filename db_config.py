@@ -74,7 +74,7 @@ def get_stat_for_any_month(conn, chat_id, date):
 		sql = f"SELECT (user_id, SUM(price)) FROM chat WHERE chat_id={chat_id} and EXTRACT(MONTH FROM created_at)={date[0]} and EXTRACT(YEAR FROM created_at)={date[-1]} GROUP BY user_id"
 		cur = conn.cursor()
 		cur.execute(sql)
-		result = cur.fetchall()
+		result = [x[0].replace('(', '').replace(')', '') for x in cur.fetchall()]
 		conn.close()
 	except Exception as _e:
 		print(_e)
@@ -95,11 +95,26 @@ def get_detail_stat_for_any_month(conn, chat_id, date):
 	return result
 
 
-def revise_all_period(conn, chat_id):
+def get_month(conn, chat_id):
+	# [int(x[0]) for x in t]
 	result = None
 
 	try:
-		sql = f""
+		sql = f"SELECT DISTINCT EXTRACT(MONTH FROM created_at) FROM chat WHERE chat_id={chat_id} and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE)"
+		cur = conn.cursor()
+		cur.execute(sql)
+		result = [int(x[0]) for x in cur.fetchall()]
+		conn.close()
+	except Exception as _e:
+		print(_e)
+	return result
+
+
+def revise_all_year(conn, chat_id, month):
+	result = None
+
+	try:
+		sql = f"SELECT (user_id, SUM(price)) FROM chat WHERE chat_id={chat_id} and EXTRACT(MONTH FROM created_at)={month} and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY user_id"
 		cur = conn.cursor()
 		cur.execute(sql)
 		result = cur.fetchall()
@@ -113,4 +128,5 @@ if __name__ == '__main__':
 	# save_payment(create_connection('db.sqlite'), [123213131, 12312312312, "test", "test"])
 	# save_payment(create_conn_psc2(), [123213131, 12312312312, "test", 123.12])
 	# print(get_stat_for_curr_month(create_conn_psc2(), 305819779))
-	print(get_detail_stat_for_curr_month(create_conn_psc2(), 305819779))
+	# print(get_detail_stat_for_curr_month(create_conn_psc2(), 305819779))
+	print(revise_for_year(create_conn_psc2(), 305819779))
