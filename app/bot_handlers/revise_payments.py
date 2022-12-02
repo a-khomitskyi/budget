@@ -78,6 +78,7 @@ async def archive(message: types.Message, state: FSMContext):
 		await message.answer(f"Загальна кількість витрачених коштів:\n{answ}", parse_mode='html')
 
 
+# Doesn't work, have to debug later
 async def all_period(message: types.Message, state: FSMContext):
 	await state.finish()
 	chat_id = message.chat.id

@@ -124,6 +124,38 @@ def revise_all_year(conn, chat_id, month):
 	return result
 
 
+def get_last_records(conn, chat_id, user_id):
+	result = None
+
+	try:
+		sql = f"SELECT (pid, user_id, created_at, title, price) FROM chat WHERE chat_id={chat_id} and user_id={user_id} and EXTRACT(MONTH FROM created_at)=EXTRACT(MONTH FROM CURRENT_DATE) and EXTRACT(YEAR FROM created_at)=EXTRACT(YEAR FROM CURRENT_DATE)"
+		cur = conn.cursor()
+		cur.execute(sql)
+		result = cur.fetchall()
+		conn.close()
+	except Exception as _e:
+		print(_e)
+	return result
+
+
+def update_payment(conn, data):
+	sql = "INSERT INTO chat (chat_id, user_id, title, price) VALUES(%s, %s, %s, %s)"
+	cur = conn.cursor()
+	cur.execute(sql, data)
+	conn.commit()
+
+	return cur.lastrowid
+
+
+def delete_payment(conn, row_id):
+	sql = f"DELETE FROM chat WHERE pid=%s"
+	cur = conn.cursor()
+	cur.execute(sql, row_id)
+	conn.commit()
+
+	return cur.lastrowid
+
+
 if __name__ == '__main__':
 	# save_payment(create_connection('db.sqlite'), [123213131, 12312312312, "test", "test"])
 	# save_payment(create_conn_psc2(), [123213131, 12312312312, "test", 123.12])

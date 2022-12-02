@@ -4,7 +4,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from app.bot_handlers.default import register_handlers_dafault
 from app.bot_handlers.add_payment import register_handlers_add
-# from app.bot_handlers.edit_payment import register_handlers_edit
+from app.bot_handlers.edit_payment import register_handlers_edit
 from app.bot_handlers.statistic_payments import register_handlers_stat
 from app.bot_handlers.revise_payments import register_handlers_revise
 
@@ -43,10 +43,8 @@ async def main():
 	register_handlers_dafault(dp)
 	register_handlers_add(dp)
 	register_handlers_stat(dp)
-	# register_handlers_stat(dp)
-	# register_handlers_edit(dp)
+	register_handlers_edit(dp)
 	register_handlers_revise(dp)
-	# register_handlers_help(dp)
 
 	# Setting-up bot
 	await set_commands(bot)
