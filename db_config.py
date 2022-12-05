@@ -139,7 +139,7 @@ def get_last_records(conn, chat_id, user_id):
 
 
 def update_payment(conn, data):
-	sql = "INSERT INTO chat (chat_id, user_id, title, price) VALUES(%s, %s, %s, %s)"
+	sql = "UPDATE chat SET title=%s, price=%s WHERE pid=%s"
 	cur = conn.cursor()
 	cur.execute(sql, data)
 	conn.commit()
